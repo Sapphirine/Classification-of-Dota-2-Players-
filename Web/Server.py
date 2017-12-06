@@ -1,14 +1,17 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify
 app = Flask(__name__)
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def index():
-	if request.method == 'POST':
-		if request.form.get('steamid'):
-			print "hello\n"
-			print request.form['steamid']
 	return render_template('index.html')
+
+
+@app.route('/query')
+def query():
+	steam_id = request.args.get('x', 0, type=int)
+	return jsonify(result=1)
+
 
 
 

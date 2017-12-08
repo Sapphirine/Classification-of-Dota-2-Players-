@@ -22,35 +22,50 @@
     <link href="static/css/landing-page.min.css" rel="stylesheet">
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.0/jquery.min.js"></script>
     <script type="text/javascript">
+
       // init
+      $(document).ready(function() {
+        $.ajaxSetup({ cache: false });
+      });
+
+
       $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
       $(function() {
         $('#valid').hide();
         $('#invalid').hide();
       });
 
+      function update_profile(data) {
+        if (data.result = "OK") {
+          $('#tags').empty();
+          for (i = 0; i < data.result.length; i++) {
+            $("#tags").append("<button type=\"button\" class=\"btn btn-primary\">" + data.tags[i] + "</button>");
+          }
+          $("#name").text(data.name)
+          $("#personaname").text(data.personaname)
+          $("#avatar").attr("src",data.img_url);
+          $('#valid').show();
+          $('#vis').empty();
+          draw_graph();     
+
+        }
+      }
+
       $(document).ready(function() {
         $('#search_btn').on("click", function(e) {
           /* Act on the event */
           var steamid;
           steamid = $('#steamid').val();
-          //console.log(steamid);
+          console.log(steamid);
 
           $.getJSON($SCRIPT_ROOT + '/query', {
             x: $('#steamid').val()
           }, function(data) {
             console.log(data);
-
-            if (data.result == 1) {
-              $("#tags").append("<button type=\"button\" class=\"btn btn-primary\">Primary</button>");
-              $('#valid').show();
-              $('#vis').empty();
-
-              draw_graph(); 
-            }
+            update_profile(data);
           });
 
-          e.preventDefault();
+          e.preventDefault(); 
           return false
         });
       });
@@ -114,22 +129,16 @@
     <!-- Testimonials -->
     <section class="testimonials text-center bg-light">
       <div class="container" id="valid">
-        <h2 class="mb-5">What people are saying...</h2>
+        <h2 class="mb-5">Profile</h2>
         <div class="row">
           <div class="col-md-4">
             <div class="testimonial-item mx-auto mb-5 mb-lg-0">
-              <img class="img-fluid rounded-circle mb-3" src="static/img/testimonials-3.jpg" alt="">
-              <h5>Sarah	W.</h5>
-              <p class="font-weight-light mb-0">"Thanks so much for making these free resources available to us!"</p>
+              <img id="avatar" class="img-fluid rounded-circle mb-3" src="static/img/testimonials-3.jpg" alt="">
+              <h5 id="name"></h5>
+              <p id="personaname" class="font-weight-light mb-0"></p>
             </div>
           </div>
           <div class="col-md-8"  id="tags">
-            <button type="button" class="btn btn-primary">Primary</button>
-            <button type="button" class="btn btn-success">Secondary</button>
-            <button type="button" class="btn btn-secondary">Secondary2222222222222222222222</button>
-            <hr/>
-            <button type="button" class="btn btn-secondary">Secondary</button>
-            <button type="button" class="btn btn-secondary">Secondary</button>
           </div>
         </div>
         <p><hr/></p>

@@ -25,7 +25,22 @@
       a:active { color: #EE3124; }
     </style>
 </head>
-    
+<svg>
+    <defs>
+      <clipPath id="clip">
+          <circle cx="0" cy="0" r="25"/>
+
+      </clipPath>
+    </defs>
+
+    <defs>
+      <clipPath id="clip2">
+          <circle cx="0" cy="0" r="45"/>
+
+      </clipPath>
+    </defs>
+
+</svg>   
 
 <body>
     <header>
@@ -104,7 +119,7 @@ function update() {
       .style("stroke", "#eee")
       .style("stroke-width", function(d) { return Math.sqrt(d.target.value) ; })
       //修改透明度
-      //.style("opacity",0.5)
+      .style("opacity",0.3)
 
 
       
@@ -161,7 +176,8 @@ function update() {
   // Append a circle
   nodeEnter.append("svg:circle")
       .attr("r", function(d) { return Math.sqrt(d.size) / 10 || 4.5; })
-      .style("fill", "#eee");
+      .style("fill", "#eee")
+
  
   d3.selection.prototype.moveToFront = function() {
     return this.each(function(){
@@ -169,14 +185,19 @@ function update() {
   });
 };
   // Append images
+
+
+  
   var images = nodeEnter.append("svg:image")
         
         .attr("xlink:href",  function(d) { return d.img;})
+        .attr("clip-path", "url(#clip)")
         .attr("x", function(d) { return -25;})
         .attr("y", function(d) { return -25;})
         .attr("height", 50)
         .attr("width", 50)
         
+
   
   // make the image grow a little on mouse over and add the text details on click
   var setEvents = images
@@ -188,19 +209,24 @@ function update() {
             // select element in current context
             d3.select( this )
               .transition()
+              
+              .attr("clip-path", "url(#clip2)")
               .attr("x", function(d) { return -60;})
               .attr("y", function(d) { return -60;})
-              .attr("height", 100)
-              .attr("width", 100);
+              .attr("height", 110)
+              .attr("width", 110)
+              
           })
           // set back
           .on( 'mouseleave', function() {
             d3.select( this )
               .transition()
+              .attr("clip-path", "url(#clip)")
               .attr("x", function(d) { return -25;})
               .attr("y", function(d) { return -25;})
               .attr("height", 50)
-              .attr("width", 50);
+              .attr("width", 50)
+
           })
           .on("dblclick",function(d,i){
             d.fixed = false;

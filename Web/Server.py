@@ -3,8 +3,10 @@ import os, pickle
 import json, urllib2
 
 steam_key = "86FE36CEEF0FECD245B5C711C8B82C5A"
+CONV64_32 = 76561197960265728
 SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
 profile_map = {}
+dota_appid = 570
 
 
 #-----------------------------------------------------------
@@ -57,6 +59,9 @@ def get_profile(steam_id32):
 	new_user.name = dota2_profile["profile"]["name"]
 	new_user.exist = "OK"
 	
+	if (!get_friends):
+		return "OK"
+
 	# get friends
 	try:
 		friends = urllib2.urlopen("http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key="+ steam_key + "&steamid=" + new_user.steam_id64 + "&relationship=friend")
@@ -69,7 +74,8 @@ def get_profile(steam_id32):
 	if "friendslist" in friends:
 		for x in friends["friendslist"]["friends"]:
 			#print x["steamid"]
-			new_user.friends.append(x["steamid"])
+			friend_id32 = int(x["steamid"]) - CONV64_32
+			new_user.friends.append()
 	
 	profile_map[steam_id32] = new_user
 	save_obj(profile_map, "profile_map")
@@ -93,7 +99,7 @@ def query():
 		profile_map = load_obj("profile_map")
 
 
-	if steam_id32 not in profile_map:
+	if steam_id32 not in profile_map or :
 		res = get_profile(str(steam_id32))
 		if res != "OK":
 			return jsonify(result = res)
@@ -112,6 +118,9 @@ def graph_json():
 	global SITE_ROOT
 	json_url = os.path.join(SITE_ROOT, "json", "graph.json")
 	json_data = json.load(open(json_url))
+
+
+	
 	print json_data
 	return jsonify(json_data)
 

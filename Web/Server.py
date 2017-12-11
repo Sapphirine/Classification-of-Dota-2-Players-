@@ -92,14 +92,12 @@ def query():
 	if len(profile_map) == 0 and os.path.isfile('obj/profile_map.pkl'):
 		profile_map = load_obj("profile_map")
 
-	print "1"
 
 	if steam_id32 not in profile_map:
 		res = get_profile(str(steam_id32))
 		if res != "OK":
 			return jsonify(result = res)
 
-	print "2"
 
 	profile_obj = profile_map[str(steam_id32)]
 	return jsonify(result = profile_obj.exist,

@@ -3,12 +3,23 @@ import os, pickle
 import json, urllib2
 import random
 
+# ML models
+from pyspark.context import SparkContext
+from pyspark.mllib.classification import LogisticRegressionWithLBFGS
+from pyspark.mllib.util import MLUtils
+from pyspark.mllib.evaluation import MulticlassMetrics
+
+
 steam_key = "86FE36CEEF0FECD245B5C711C8B82C5A"
 CONV64_32 = 76561197960265728
 SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
 profile_map = {}
 dota_appid = 570
 cur_id32 = -1
+
+sc = SparkContext('local')
+test_model = LogisticRegressionModel.load(sc, "test_model.model")
+print test_model.predict([0,0,1])
 
 
 #-----------------------------------------------------------

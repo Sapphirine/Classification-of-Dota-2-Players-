@@ -32,6 +32,9 @@ class Profile:
 	personaname = ""
 	friends = []
 	tags = ["aaa","bbb"]
+
+	def __init__(self):
+		friends = []
 	
 	def toJSON(self):
 		return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
@@ -39,59 +42,89 @@ class Profile:
 
 def get_profile(steam_id32):
 	global steam_key, profile_map
-	new_user = Profile()
-	new_user.steam_id32 = steam_id32
+
+	if steam_id32 in profile_map:
+		return steam_id32 + " already exist"
+
+	new_user = {}
+
 	try:
 		dota2_profile = urllib2.urlopen("https://api.opendota.com/api/players/" + steam_id32)
 	except urllib2.HTTPError, e:
 		print steam_id32 + " request_error"
+		new_user["exist"] = False
+		profile_map[steam_id32] = new_user
+		save_obj(profile_map, "profile_map")
 		return "request_error"
 	
 	dota2_profile = json.loads(dota2_profile.read()) 
 	
 	if "profile" not in dota2_profile:
 		print steam_id32 + " id_not_exist"
+		new_user["exist"] = False
+		profile_map[steam_id32] = new_user
+		save_obj(profile_map, "profile_map")
 		return "id_not_exsit"
 	
-	new_user.steam_id64 = dota2_profile["profile"]["steamid"]
-	new_user.avatar_full = dota2_profile["profile"]["avatarfull"]
-	new_user.avatar_medium = dota2_profile["profile"]["avatarmedium"]
-	new_user.personaname = dota2_profile["profile"]["personaname"]
-	new_user.name = dota2_profile["profile"]["name"]
-	new_user.exist = "OK"
+	new_user["steam_id64"] = dota2_profile["profile"]["steamid"]
+	new_user["steam_id32"] = steam_id32
+	new_user["avatar_full"] = dota2_profile["profile"]["avatarfull"]
+	new_user["avatar_medium"] = dota2_profile["profile"]["avatarmedium"]
+	new_user["personaname"] = dota2_profile["profile"]["personaname"]
+	new_user["name"] = dota2_profile["profile"]["name"]
+	new_user["exist"] = True
+	new_user["tags"] = ["aaa", "bbb"]
 	
-	if (!get_friends):
-		return "OK"
-
 	# get friends
 	try:
-		friends = urllib2.urlopen("http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key="+ steam_key + "&steamid=" + new_user.steam_id64 + "&relationship=friend")
+		friends = urllib2.urlopen("http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key="+ steam_key + "&steamid=" + new_user["steam_id64"] + "&relationship=friend")
 	except urllib2.HTTPError, e:
+		new_user["exist"] = False
+		profile_map[steam_id32] = new_user
+		save_obj(profile_map, "profile_map")
 		print steam_id32 + " friends request_error"
 		return "request_error"
 	
 	friends = json.loads(friends.read())
-	
+	friend_list = []
 	if "friendslist" in friends:
 		for x in friends["friendslist"]["friends"]:
 			#print x["steamid"]
 			friend_id32 = int(x["steamid"]) - CONV64_32
-			new_user.friends.append()
-	
+			friend_list.append(str(friend_id32))
+
+	new_user["friends"] = friend_list
+	#print new_user.friends
 	profile_map[steam_id32] = new_user
 	save_obj(profile_map, "profile_map")
+
+	print "get " + steam_id32 + " done" 
+
 	return "OK"
 
 def gen_children(steam_id32, t):
 	global profile_map
 	re_hash = {}
 	user = profile_map[steam_id32]
-	re_hash.name = user.name
-	re_hash.img = user.avatar_medium
-	re_hash.size = 40000
-	re_hash.value = 800
-	re_hash.type = t
+	re_hash["name"] = user["name"]
+	re_hash["img"] = user["avatar_medium"]
+	re_hash["size"] = 4
+	re_hash["value"] = 8
+	re_hash["type"] = t
+	re_hash["steam_id32"] = user["steam_id32"]
 	return re_hash
+
+def count_same_tags(id1, id2):
+	global profile_map
+	id1_map = {}
+	count = 0
+	for x in profile_map[id1][tags]:
+		id1_map[x] = True
+	for x in profile_map[id2][tags]:
+		if x in id1_map:
+			count += 1
+	return count
+	
 
 #------------------------------------------------------------
 
@@ -110,21 +143,23 @@ def query():
 	if len(profile_map) == 0 and os.path.isfile('obj/profile_map.pkl'):
 		profile_map = load_obj("profile_map")
 
-
-	if steam_id32 not in profile_map or :
+	steam_id32 = str(steam_id32)
+	if steam_id32 not in profile_map:
 		res = get_profile(str(steam_id32))
 		if res != "OK":
 			return jsonify(result = res)
 
 
-	profile_obj = profile_map[str(steam_id32)]
-	cur_id32 = steam_id32
+	profile_obj = profile_map[steam_id32]
+	cur_id32 = str(steam_id32)
+	if profile_obj["exist"] == False:
+		return jsonify(result = "id_not_exsit")
 
-	return jsonify(result = profile_obj.exist,
-				   img_url = profile_obj.avatar_full,
-				   name = profile_obj.name,
-				   personaname = profile_obj.personaname,
-				   tags = profile_obj.tags)
+	return jsonify(result = "OK",
+				   img_url = profile_obj["avatar_full"],
+				   name = profile_obj["name"],
+				   personaname = profile_obj["personaname"],
+				   tags = profile_obj["tags"])
 	
 
 @app.route('/json')
@@ -133,18 +168,29 @@ def graph_json():
 	re_json = {}
 
 	cur_obj = profile_map[cur_id32]
-	re_json["name"] = cur_obj.name
-	re_json["img"] = cur_obj.avatar_medium
+	re_json["name"] = cur_obj["name"]
+	re_json["img"] = cur_obj["avatar_medium"]
+	re_json["steam_id32"] = cur_id32
 	re_json["father"] = 1
 
 	children = []
-	for friend in cur_obj.friends:
-		if friend not in profile_map:
-			ok = get_profile(str(friend))
-			if ok == "OK":
-				children.append(gen_children(str(friend), 2))
+	print "friends len: " + str(len(cur_obj["friends"]))
+	print cur_obj["friends"]
+	count = 0
+	for friend in cur_obj["friends"]:
+		#print cur_obj.friends
+		count += 1
+		friend = str(friend)
 
-	re_json["cdhilren"] = children
+		if friend not in profile_map:
+			ok = get_profile(friend)
+			if ok == "OK":
+				children.append(gen_children(friend, 2))
+		elif profile_map[friend]["exist"] == True:
+			children.append(gen_children(friend, 2))
+
+
+	re_json["children"] = children
 
 
 	#global SITE_ROOT

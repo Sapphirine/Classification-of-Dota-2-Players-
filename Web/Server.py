@@ -7,6 +7,7 @@ CONV64_32 = 76561197960265728
 SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
 profile_map = {}
 dota_appid = 570
+cur_id32 = -1
 
 
 #-----------------------------------------------------------
@@ -81,6 +82,17 @@ def get_profile(steam_id32):
 	save_obj(profile_map, "profile_map")
 	return "OK"
 
+def gen_children(steam_id32, t):
+	global profile_map
+	re_hash = {}
+	user = profile_map[steam_id32]
+	re_hash.name = user.name
+	re_hash.img = user.avatar_medium
+	re_hash.size = 40000
+	re_hash.value = 800
+	re_hash.type = t
+	return re_hash
+
 #------------------------------------------------------------
 
 app = Flask(__name__)
@@ -92,7 +104,7 @@ def index():
 
 @app.route('/query')
 def query():
-	global profile_map
+	global profile_map, cur_id32
 	steam_id32 = request.args.get('x', 0, type=int)
 
 	if len(profile_map) == 0 and os.path.isfile('obj/profile_map.pkl'):
@@ -106,6 +118,8 @@ def query():
 
 
 	profile_obj = profile_map[str(steam_id32)]
+	cur_id32 = steam_id32
+
 	return jsonify(result = profile_obj.exist,
 				   img_url = profile_obj.avatar_full,
 				   name = profile_obj.name,
@@ -115,14 +129,31 @@ def query():
 
 @app.route('/json')
 def graph_json():
-	global SITE_ROOT
-	json_url = os.path.join(SITE_ROOT, "json", "graph.json")
-	json_data = json.load(open(json_url))
+	global cur_id32, profile_map
+	re_json = {}
+
+	cur_obj = profile_map[cur_id32]
+	re_json["name"] = cur_obj.name
+	re_json["img"] = cur_obj.avatar_medium
+	re_json["father"] = 1
+
+	children = []
+	for friend in cur_obj.friends:
+		if friend not in profile_map:
+			ok = get_profile(str(friend))
+			if ok == "OK":
+				children.append(gen_children(str(friend), 2))
+
+	re_json["cdhilren"] = children
 
 
+	#global SITE_ROOT
+	#json_url = os.path.join(SITE_ROOT, "json", "graph.json")
+	#json_data = json.load(open(json_url))
 	
-	print json_data
-	return jsonify(json_data)
+	re = json.dumps(re_json)
+	print re
+	return re
 
 
 

@@ -56,6 +56,7 @@
           /* Act on the event */
           var steamid;
           steamid = $('#steamid').val();
+          //TODO check id is number
           console.log(steamid);
 
           $.getJSON($SCRIPT_ROOT + '/query', {
@@ -159,7 +160,7 @@
           </div>
         </div>
         <p><hr/></p>
-        <h3> TAG MAP </h3>
+        <h3 id="TAGMAP"></h3>
         <div class="row" id="graph_frame">
           <div class="col-md-12" id="vis">
             
@@ -167,8 +168,8 @@
               var tcBlack = "#130C0E";
 
 // rest of vars
-var w = 960,
-    h = 800,
+var w = 1120,
+    h = 1000,
     maxNodeSize = 50,
     x_browser = 20,
     y_browser = 25,
@@ -185,7 +186,7 @@ function draw_graph() {
     root = json;
     root.fixed = true;
     root.x = w / 2;
-    root.y = h / 4;
+    root.y = h / 2;
    
    
           // Build the path
@@ -232,7 +233,7 @@ function update() {
   var pathEnter =  path.enter().insert("svg:path")
       .attr("class", "link")
       // .attr("marker-end", "url(#end)")
-      .style("stroke", "#eee")
+      .style("stroke", "blue")
       .style("stroke-width", function(d) { return Math.sqrt(d.target.value) ; })
       //修改透明度
       .style("opacity",0.3)
@@ -251,7 +252,7 @@ function update() {
             // select element in current context
             d3.select( this )
               .transition()
-              .style("stroke", "#eee")
+              .style("stroke", "blue")
 
               ;
           }) ;
@@ -430,7 +431,7 @@ function nodeTransform(d) {
   }
  */ 
 //var toggle = 0;
-
+$("#TAGMAP").text("Friends' Tag Map")
 var dchildren1 = [];
 var dchildren2 = [];
 var flag = 0;
@@ -442,11 +443,12 @@ function clicks(d) {
   
   flag2++
   if (d.father){
+  
   //父节点
   flag++
   flag5 = 1
   if (flag2==1 & flag4==1){
-
+  
   for (var i = 0; i < d.children.length; i++){
         if (d.children[i].type == 1){
           dchildren1.push(d.children[i]);
@@ -458,7 +460,8 @@ function clicks(d) {
     }
 
   if (flag%2==1) {
-
+    $("#TAGMAP").text("Masters' Tag Map") 
+    
     d.children = [];
     
     for (var i = 0; i < dchildren1.length; i++){
@@ -471,7 +474,7 @@ function clicks(d) {
 
   } else if (flag%2==0){
     d.children = [];
-    
+    $("#TAGMAP").text("Friends' Tag Map")
     for (var i = 0; i < dchildren2.length; i++){
           d.children.push(dchildren2[i]);
         }

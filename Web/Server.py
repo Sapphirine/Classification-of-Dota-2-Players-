@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template, jsonify
 import os, pickle
 import json, urllib2
+import random
 
 steam_key = "86FE36CEEF0FECD245B5C711C8B82C5A"
 CONV64_32 = 76561197960265728
@@ -31,7 +32,7 @@ class Profile:
 	name = ""
 	personaname = ""
 	friends = []
-	tags = ["aaa","bbb"]
+	tags = ["aaa","bbb","aaa", "bbb", "aaa", "bbb", "bbb", "aaa", "bbb", "bbb", "aaa", "bbb"]
 
 	def __init__(self):
 		friends = []
@@ -73,7 +74,7 @@ def get_profile(steam_id32):
 	new_user["personaname"] = dota2_profile["profile"]["personaname"]
 	new_user["name"] = dota2_profile["profile"]["name"]
 	new_user["exist"] = True
-	new_user["tags"] = ["aaa", "bbb"]
+	new_user["tags"] = ["aaa", "bbb", "aaa", "bbb", "bbb", "aaa", "bbb", "bbb", "aaa", "bbb"]
 	
 	# get friends
 	try:
@@ -112,6 +113,7 @@ def gen_children(steam_id32, t):
 	re_hash["value"] = 8
 	re_hash["type"] = t
 	re_hash["steam_id32"] = user["steam_id32"]
+	re_hash["tags"] = user["tags"]
 	return re_hash
 
 def count_same_tags(id1, id2):
@@ -155,6 +157,8 @@ def query():
 	if profile_obj["exist"] == False:
 		return jsonify(result = "id_not_exsit")
 
+	print(profile_obj["tags"])
+
 	return jsonify(result = "OK",
 				   img_url = profile_obj["avatar_full"],
 				   name = profile_obj["name"],
@@ -172,6 +176,7 @@ def graph_json():
 	re_json["img"] = cur_obj["avatar_medium"]
 	re_json["steam_id32"] = cur_id32
 	re_json["father"] = 1
+	re_json["tags"] = cur_obj["tags"]
 
 	children = []
 	print "friends len: " + str(len(cur_obj["friends"]))
@@ -185,9 +190,9 @@ def graph_json():
 		if friend not in profile_map:
 			ok = get_profile(friend)
 			if ok == "OK":
-				children.append(gen_children(friend, 2))
+				children.append(gen_children(friend, random.randint(1,2)))
 		elif profile_map[friend]["exist"] == True:
-			children.append(gen_children(friend, 2))
+			children.append(gen_children(friend, random.randint(1,2)))
 
 
 	re_json["children"] = children

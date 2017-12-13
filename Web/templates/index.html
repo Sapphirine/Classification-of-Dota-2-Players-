@@ -34,13 +34,28 @@
         $('#valid').hide();
         $('#invalid').hide();
       });
-
+      var flag_tag = 0
+      var flag_times = 0
       function update_profile(data) {
         if (data.result = "OK") {
           $('#tags').empty();
-          for (i = 0; i < data.result.length; i++) {
-            $("#tags").append("<button type=\"button\" class=\"btn btn-primary\">" + data.tags[i] + "</button>");
+          console.log(data.result.length)
+          console.log(data.result)
+          for (i = 0; i < data.tags.length; i++) {
+            flag_tag++
+            $("#tags").append("<button id = button type=\"button\" class=\"btn btn-primary\" style=\"margin-right:5px \"    >" + data.tags[i] + "</button>");
+            
+            if (flag_tag%5 ==0){
+            $("#tags").append("<p><hr\/><\/p>")
+            }
+
           }
+          var aaa_content = "aaaaaa"
+          $("#button").click(function(){
+                  console.log("success!!!!!!!!!!!")
+                  //$("#tags_text").empty()
+                  $("#tags_text").append("<p>testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest<\/p>") 
+            })
           $("#name").text(data.name)
           $("#personaname").text(data.personaname)
           $("#avatar").attr("src",data.img_url);
@@ -158,6 +173,10 @@
           </div>
           <div class="col-md-8"  id="tags">
           </div>
+         
+         
+          <div class="col-md-12"  id="tags_text">
+          </div>
         </div>
         <p><hr/></p>
         <h3 id="TAGMAP"></h3>
@@ -217,7 +236,7 @@ function update() {
         .links(links)
         .gravity(0.05)
     .charge(-3000)
-    .linkDistance(150)
+    .linkDistance(200)
     .friction(0.5)
     .linkStrength(function(l, i) {return 1; })
     .size([w, h])
@@ -326,7 +345,6 @@ function update() {
             // select element in current context
             d3.select( this )
               .transition()
-              
               .attr("clip-path", "url(#clip2)")
               .attr("x", function(d) { return -60;})
               .attr("y", function(d) { return -60;})
@@ -355,14 +373,17 @@ function update() {
       .attr("class", "nodetext")
       .attr("x", x_browser)
       .attr("y", y_browser +30)
-      .attr("fill", tcBlack)
-      .text(function(d) { return d.hero; });
+      .attr("fill", "black")
+      .text(function(d) { return d.tags; })
+
+      ;
+  /*
   nodeEnter.append("text")
       .attr("class", "nodetext")
       .attr("x", x_browser )
       .attr("y", y_browser +45)
       .attr("fill", tcBlack)
-      .text(function(d) { return d.name; });
+      .text(function(d) { return d.tags; });*/
 
  
  
@@ -443,12 +464,11 @@ function clicks(d) {
   
   flag2++
   if (d.father){
-  
+  console.log("father")
   //父节点
   flag++
   flag5 = 1
   if (flag2==1 & flag4==1){
-  
   for (var i = 0; i < d.children.length; i++){
         if (d.children[i].type == 1){
           dchildren1.push(d.children[i]);
@@ -458,27 +478,20 @@ function clicks(d) {
         }
       }
     }
-
   if (flag%2==1) {
     $("#TAGMAP").text("Masters' Tag Map") 
-    
     d.children = [];
-    
     for (var i = 0; i < dchildren1.length; i++){
           d.children.push(dchildren1[i]);
         }
 
     console.log(d.children)
-
-    
-
   } else if (flag%2==0){
     d.children = [];
     $("#TAGMAP").text("Friends' Tag Map")
     for (var i = 0; i < dchildren2.length; i++){
           d.children.push(dchildren2[i]);
         }
-    console.log(d.children)
       $.getJSON($SCRIPT_ROOT + '/query', {
       x: d.steam_id32
       }, function(data) {
@@ -486,6 +499,7 @@ function clicks(d) {
         update_profile(data);
       });
     }
+  
 
   }
   //子节点
@@ -495,12 +509,14 @@ function clicks(d) {
     if (flag5!=0){
       flag4=0
     }
+   if (flag%2==0){
     $.getJSON($SCRIPT_ROOT + '/query', {
       x: d.steam_id32
       }, function(data) {
-        console.log(data);
+        //console.log(data);
         update_profile(data);
       });
+  }
   }
   
   update();

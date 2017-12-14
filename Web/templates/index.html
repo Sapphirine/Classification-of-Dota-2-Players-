@@ -28,6 +28,9 @@
         $.ajaxSetup({ cache: false });
       });
 
+      var toggle = 1
+          
+
 
       $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
       $(function() {
@@ -43,25 +46,48 @@
           console.log(data.result)
           for (i = 0; i < data.tags.length; i++) {
             flag_tag++
-            $("#tags").append("<button id = button type=\"button\" class=\"btn btn-primary\" style=\"margin-right:5px \"    >" + data.tags[i] + "</button>");
+            tag_name = data.tags[i]
+            var button_type
+            if (tag_name == "aaa") {
+              button_type = "danger"
+            } else if (tag_name == "bbb") {
+              button_type = "primary"
+            }
+
+
+            $("#tags").append("<button id = button" + i + " type=\"button\" class=\"btn btn-" + button_type+"\" style=\"margin-right:5px \"    >" + data.tags[i] + "</button>");
             
             if (flag_tag%5 ==0){
             $("#tags").append("<p><hr\/><\/p>")
             }
 
           }
-          var aaa_content = "aaaaaa"
-          $("#button").click(function(){
-                  console.log("success!!!!!!!!!!!")
-                  //$("#tags_text").empty()
-                  $("#tags_text").append("<p>testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest<\/p>") 
-            })
+
+
+          $("*[id^='button']").click(function(d){
+                  var s;
+                  console.log(d);
+                  if (d.target.firstChild.data == "aaa") {
+                    s = "aaa sb"
+                  } else if (d.target.firstChild.data == "bbb") {
+                    s = "bbb sb"
+                  } else if (d.target.firstChild.data == "ccc") {
+                    s = "ccc sb"
+                  } else if (d.target.firstChild.data == "ddd") {
+                    s = "ddd sb"
+                  } 
+        
+                  $("#tags_text").empty()
+                  $("#tags_text").append("<p>" + s + "<\/p>") 
+          })
+
+           
           $("#name").text(data.name)
           $("#personaname").text(data.personaname)
           $("#avatar").attr("src",data.img_url);
           $('#valid').show();
           $('#vis').empty();
-          draw_graph();     
+          draw_graph("json_master");     
 
         }
       }
@@ -197,10 +223,10 @@ var w = 1120,
 var vis;
 var force = d3.layout.force(); 
 
-function draw_graph() {
+function draw_graph(user_json) {
   vis = d3.select("#vis").append("svg").attr("width", w).attr("height", h);
    
-  d3.json("/json", function(json) {
+  d3.json("/"+user_json, function(json) {
     console.log(json)
     root = json;
     root.fixed = true;
@@ -451,75 +477,36 @@ function nodeTransform(d) {
     
   }
  */ 
-//var toggle = 0;
-$("#TAGMAP").text("Friends' Tag Map")
-var dchildren1 = [];
-var dchildren2 = [];
-var flag = 0;
-var flag2 = 0;
-var flag4 = 1;
-var flag5 = 0;
+
+
+$("#TAGMAP").text("Masters' Tag Map")
 function clicks(d) {
-  force.charge(-500)
-  
-  flag2++
   if (d.father){
-  console.log("father")
-  //父节点
-  flag++
-  flag5 = 1
-  if (flag2==1 & flag4==1){
-  for (var i = 0; i < d.children.length; i++){
-        if (d.children[i].type == 1){
-          dchildren1.push(d.children[i]);
-        }
-        else if (d.children[i].type == 2){
-          dchildren2.push(d.children[i]);
-        }
-      }
+    console.log("father")
+    if (toggle == 1) {
+      $("#TAGMAP").text("Friends' Tag Map")
+      $('#vis').empty();
+      draw_graph("json_friends")
+      toggle = 0
+    } else {
+      $('#vis').empty();
+      $("#TAGMAP").text("Masters' Tag Map")
+      draw_graph("json_master")
+      toggle = 1
     }
-  if (flag%2==1) {
-    $("#TAGMAP").text("Masters' Tag Map") 
-    d.children = [];
-    for (var i = 0; i < dchildren1.length; i++){
-          d.children.push(dchildren1[i]);
-        }
-
-    console.log(d.children)
-  } else if (flag%2==0){
-    d.children = [];
-    $("#TAGMAP").text("Friends' Tag Map")
-    for (var i = 0; i < dchildren2.length; i++){
-          d.children.push(dchildren2[i]);
-        }
-      $.getJSON($SCRIPT_ROOT + '/query', {
-      x: d.steam_id32
-      }, function(data) {
-        console.log(data);
-        update_profile(data);
-      });
-    }
-  
-
   }
   //子节点
   else {
     console.log("children");
-    flag2 = 0
-    if (flag5!=0){
-      flag4=0
-    }
-   if (flag%2==0){
-    $.getJSON($SCRIPT_ROOT + '/query', {
+    if (toggle == 0) {
+      $.getJSON($SCRIPT_ROOT + '/query', {
       x: d.steam_id32
       }, function(data) {
         //console.log(data);
         update_profile(data);
       });
+    }
   }
-  }
-  
-  update();
 }
  
  
@@ -539,6 +526,9 @@ function flatten(root) {
   }
  
   recurse(root);
+
+  console.log(nodes)
+
   return nodes;
 } 
                 

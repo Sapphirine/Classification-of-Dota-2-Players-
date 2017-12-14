@@ -4,10 +4,10 @@ import json, urllib2
 import random
 
 # ML models
-from pyspark.context import SparkContext
-from pyspark.mllib.classification import LogisticRegressionWithLBFGS
-from pyspark.mllib.util import MLUtils
-from pyspark.mllib.evaluation import MulticlassMetrics
+#from pyspark.context import SparkContext
+#from pyspark.mllib.classification import LogisticRegressionWithLBFGS,LogisticRegressionModel
+#from pyspark.mllib.util import MLUtils
+#from pyspark.mllib.evaluation import MulticlassMetrics
 
 
 steam_key = "86FE36CEEF0FECD245B5C711C8B82C5A"
@@ -17,9 +17,12 @@ profile_map = {}
 dota_appid = 570
 cur_id32 = -1
 
-sc = SparkContext('local')
-test_model = LogisticRegressionModel.load(sc, "test_model.model")
-print test_model.predict([0,0,1])
+
+#sc = SparkContext('local')
+#test_model = LogisticRegressionModel.load(sc, "models/test_model.model")
+#model_map = {}
+#tag_name_map = {}
+
 
 
 #-----------------------------------------------------------
@@ -34,26 +37,17 @@ def load_obj(name):
 	with open(path, 'rb') as f:
 		return pickle.load(f)
 
-class Profile:
-	exist = "not_exsit"
-	steam_id32 = ""
-	steam_id64 = ""
-	avatar_medium = ""
-	avatar_full = ""
-	name = ""
-	personaname = ""
-	friends = []
-	tags = ["aaa","bbb","aaa", "bbb", "aaa", "bbb", "bbb", "aaa", "bbb", "bbb", "aaa", "bbb"]
 
-	def __init__(self):
-		friends = []
-	
-	def toJSON(self):
-		return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+#def gen_tags(name, args):
+#	global model_map, tag_name_map
+#	tag_id = model_map[name].predict(args)
+#	return tag_name_map[name][tag_id]
+
+#def get_args()
 	
 
 def get_profile(steam_id32):
-	global steam_key, profile_map
+	global steam_key, profile_map, model_map
 
 	if steam_id32 in profile_map:
 		return steam_id32 + " already exist"
@@ -85,7 +79,13 @@ def get_profile(steam_id32):
 	new_user["personaname"] = dota2_profile["profile"]["personaname"]
 	new_user["name"] = dota2_profile["profile"]["name"]
 	new_user["exist"] = True
-	new_user["tags"] = ["aaa", "bbb", "aaa", "bbb", "bbb", "aaa", "bbb", "bbb", "aaa", "bbb"]
+
+	# gen tags
+	#for name in model_map:
+	#	new_user["tags"].append(gen_tags(name, get_args(steam_id32, name)))
+
+
+	new_user["tags"] = ["aaa", "bbb", "ccc", "ddd"]
 	
 	# get friends
 	try:
@@ -137,6 +137,46 @@ def count_same_tags(id1, id2):
 		if x in id1_map:
 			count += 1
 	return count
+
+
+def graph_json(master):
+	global cur_id32, profile_map
+	re_json = {}
+
+	cur_obj = profile_map[cur_id32]
+	re_json["name"] = cur_obj["name"]
+	re_json["img"] = cur_obj["avatar_medium"]
+	re_json["steam_id32"] = cur_id32
+	re_json["father"] = 1
+	re_json["tags"] = cur_obj["tags"]
+
+	children = []
+	print "friends len: " + str(len(cur_obj["friends"]))
+	print cur_obj["friends"]
+	count = 0
+	for friend in cur_obj["friends"]:
+		#print cur_obj.friends
+		count += 1
+		friend = str(friend)
+
+		if friend not in profile_map:
+			ok = get_profile(friend)
+			if ok == "OK":
+				tmp = gen_children(friend, random.randint(1,2))
+				if master and tmp["type"] == 1:
+					children.append(tmp)
+				elif not master and tmp["type"] == 2:
+					children.append(tmp)
+		elif profile_map[friend]["exist"] == True:
+			tmp = gen_children(friend, random.randint(1,2))
+			if master and tmp["type"] == 1:
+				children.append(tmp)
+			elif not master and tmp["type"] == 2:
+				children.append(tmp)
+
+
+	re_json["children"] = children
+	return re_json
 	
 
 #------------------------------------------------------------
@@ -177,46 +217,19 @@ def query():
 				   tags = profile_obj["tags"])
 	
 
-@app.route('/json')
-def graph_json():
-	global cur_id32, profile_map
-	re_json = {}
-
-	cur_obj = profile_map[cur_id32]
-	re_json["name"] = cur_obj["name"]
-	re_json["img"] = cur_obj["avatar_medium"]
-	re_json["steam_id32"] = cur_id32
-	re_json["father"] = 1
-	re_json["tags"] = cur_obj["tags"]
-
-	children = []
-	print "friends len: " + str(len(cur_obj["friends"]))
-	print cur_obj["friends"]
-	count = 0
-	for friend in cur_obj["friends"]:
-		#print cur_obj.friends
-		count += 1
-		friend = str(friend)
-
-		if friend not in profile_map:
-			ok = get_profile(friend)
-			if ok == "OK":
-				children.append(gen_children(friend, random.randint(1,2)))
-		elif profile_map[friend]["exist"] == True:
-			children.append(gen_children(friend, random.randint(1,2)))
-
-
-	re_json["children"] = children
-
-
-	#global SITE_ROOT
-	#json_url = os.path.join(SITE_ROOT, "json", "graph.json")
-	#json_data = json.load(open(json_url))
-	
+@app.route('/json_master')
+def json_master():
+	re_json = graph_json(True)
 	re = json.dumps(re_json)
 	print re
 	return re
 
+@app.route('/json_friends')
+def json_friends():
+	re_json = graph_json(False)
+	re = json.dumps(re_json)
+	print re
+	return re
 
 
 

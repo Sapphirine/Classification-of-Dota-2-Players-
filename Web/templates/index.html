@@ -88,14 +88,96 @@
           $("*[id^='button']").click(function(d){
                   var s;
                   console.log(d);
-                  if (d.target.firstChild.data == "aaa") {
-                    s = "aaa sb"
-                  } else if (d.target.firstChild.data == "bbb") {
-                    s = "bbb sb"
-                  } else if (d.target.firstChild.data == "ccc") {
-                    s = "ccc sb"
-                  } else if (d.target.firstChild.data == "ddd") {
-                    s = "ddd sb"
+                  if (d.target.firstChild.data == "newbie") {
+                    s = "The players with extremely low kills and assists but extremely high deaths."
+                  } else if (d.target.firstChild.data == "normal") {
+                    s = "The players with low kills and assists but high deaths."
+                  } else if (d.target.firstChild.data == "legend") {
+                    s = "The players with high kills and assists but low deaths."
+                  } else if (d.target.firstChild.data == "divine") {
+                    s = "The players with extremely high kills and assists but extremely low deaths."
+                  } else if (d.target.firstChild.data == "onlooker") {
+                    s = "The players with extremely low tower damage, extremely low assists  and poor abilities in last hits."
+                  } else if (d.target.firstChild.data == "effective assistant") {
+                    s = "The players with high assists but low tower damage and poor abilities in last hits."
+                  } else if (d.target.firstChild.data == "warrior") {
+                    s = "The players with high assists, common tower damage and common abilities in last hits."
+                  } else if (d.target.firstChild.data == "main force") {
+                    s = "The players with low assists but high tower damage and good abilities in last hits."
+                  } else if (d.target.firstChild.data == "tower killer") {
+                    s = "The players with low assists but extremely high tower damage and excellent abilities in last hits."
+                  } else if (d.target.firstChild.data == "pioneer") {
+                    s = "The players with  low assists, extremely poor abilities in healing teammates but good abilities in stunning enemies."
+                  } else if (d.target.firstChild.data == "enemy controller") {
+                    s = "The players with common assists, poor abilities in healing teammates but excellent abilities in stunning enemies."
+                  } else if (d.target.firstChild.data == "backbone") {
+                    s = "The players with high assists, good abilities in healing teammates and common abilities in stunning enemies."
+                  } else if (d.target.firstChild.data == "babysitter") {
+                    s = "The players with extremely high assists, excellent abilities in healing teammates but poor abilities in stunning enemies."
+                  } else if (d.target.firstChild.data == "prophet") {
+                    s = "The players with extremely low kills, poor abilities in killing couriers but excellent skills in cleaning enemies' sentries."
+                  } else if (d.target.firstChild.data == "ruthless prophet") {
+                    s = "The players with not bad kills, poor abilities in killing couriers but excellent skills in cleaning enemies' sentries."
+                  } else if (d.target.firstChild.data == "normal support") {
+                    s = "The players with common kills, common abilities in killing couriers as well as common skills in cleaning enemies' sentries."
+                  } else if (d.target.firstChild.data == "aggressive support") {
+                    s = "The players with high kills, good abilities in killing couriers as well as common skills in cleaning enemies' sentries."
+                  } else if (d.target.firstChild.data == "hunter") {
+                    s = "The players with extremely high kills, excellent abilities in killing couriers but poor skills in cleaning enemies' sentries."
+                  } else if (d.target.firstChild.data == "wizard") {
+                    s = "The players with extremely poor abilities in stunning enemies, common skills in stacking camps but excellent abilities in healing teammates."
+                  } else if (d.target.firstChild.data == "shepherd") {
+                    s = "The players with  poor abilities in stunning enemies but talented skills in stacking camps and good abilities in healing teammates."
+                  } else if (d.target.firstChild.data == "paladin") {
+                    s = "The players with common skills in stacking camps and common abilities in healing teammates but good abilities in stunning enemies."
+                  } else if (d.target.firstChild.data == "knight") {
+                    s = "The players with poor skills in stacking camps and poor abilities in healing teammates but excellent abilities in stunning enemies."
+                  } else if (d.target.firstChild.data == "berserker") {
+                    s = "The players with poor skills in stacking camps and extremely poor abilities in healing teammates but good abilities in stunning enemies."
+                  } else if (d.target.firstChild.data == "alchemist") {
+                    s = "The players with excellent abilities in gaining gold, extremely high kills as well as talented skills in last hits."
+                  } else if (d.target.firstChild.data == "gold digger") {
+                    s = "The players with good abilities in gaining gold,  high kills as well as good skills in last hits."
+                  } else if (d.target.firstChild.data == "white collar") {
+                    s = "The players with common abilities in gaining gold, common kills as well as common skills in last hits."
+                  } else if (d.target.firstChild.data == "mediocre") {
+                    s = "The players with extremely poor abilities in gaining gold, extremely low kills as well as extremely poor skills in last hits."
+                  } else if (d.target.firstChild.data == "dominator") {
+                    s = "The player with excellent skills in gaining gold as well as experience."
+                  } else if (d.target.firstChild.data == "main force") {
+                    s = "The player with good skills in gaining gold as well as experience."
+                  } else if (d.target.firstChild.data == "hard worker") {
+                    s = "The player with common skills in gaining gold as well as experience."
+                  } else if (d.target.firstChild.data == "one tenth") {
+                    s = "The player with poor skills in gaining gold as well as experience."
+                  } else if (d.target.firstChild.data == "destroyer") {
+                    s = "The players with high hero damage and extremely high tower damage."
+                  } else if (d.target.firstChild.data == "ruthless killer") {
+                    s = "The players with extremely high hero damage and high tower damage."
+                  } else if (d.target.firstChild.data == "rifleman") {
+                    s = "The players with high hero damage and common tower damage."
+                  } else if (d.target.firstChild.data == "footman") {
+                    s = "The players with common hero damage and low tower damage."
+                  } else if (d.target.firstChild.data == "kind person") {
+                    s = "The players with low hero damage and extremely low tower damage."
+                  } else if (d.target.firstChild.data == "selfish") {
+                    s = "The player with extremely poor skills in using sentries as well as extremely poor skills in cleaning enemies' sentries."
+                  } else if (d.target.firstChild.data == "weeder") {
+                    s = "The player with poor skills in using sentries but excellent skills in cleaning enemies' sentries."
+                  } else if (d.target.firstChild.data == "guard") {
+                    s = "The player with common skills in using sentries as well as common skills in cleaning enemies' sentries."
+                  } else if (d.target.firstChild.data == "telescope") {
+                    s = "The player with good skills in using sentries as well as good skills in cleaning enemies' sentries."
+                  } else if (d.target.firstChild.data == "warder") {
+                    s = "The player with excellent skills in using sentries but common skills in cleaning enemies' sentries."
+                  } else if (d.target.firstChild.data == "skilled master") {
+                    s = "The players with extremely high denies and excellent skills in last hits."
+                  } else if (d.target.firstChild.data == "expert") {
+                    s = "The players with high denies and good skills in last hits."
+                  } else if (d.target.firstChild.data == "pass line") {
+                    s = "The players with common denies and common skills in last hits."
+                  } else if (d.target.firstChild.data == "philanthropist") {
+                    s = "The players with low denies and poor skills in last hits."
                   } 
         
                   $("#tags_text").empty()
@@ -520,6 +602,7 @@ function clicks(d) {
   else {
     console.log("children");
     if (toggle == 0) {
+      toggle = 1
       $.getJSON($SCRIPT_ROOT + '/query', {
       x: d.steam_id32
       }, function(data) {

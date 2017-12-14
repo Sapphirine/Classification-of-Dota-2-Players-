@@ -28,8 +28,23 @@
         $.ajaxSetup({ cache: false });
       });
 
+     	function contains(a, obj) {
+	    for (var i = 0; i < a.length; i++) {
+	        if (a[i] === obj) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+	
       var toggle = 1
+	
           
+	var level5 = ["divine","tower killer","babysitter","normal support","ruthless prophet","wizard","alchemist","dominator","destroyer","warder","skilled master"]; 
+	var level4 = ["legend","main force","backbone","prophet","shepherd","gold digger","main","ruthless killer","telescope","expert"];
+	var level3 = ["normal","warrior","enemy controller","hunter","paladin","white collar","hard worker","rifleman","guard","pass line"];
+	var level2 = ["newbie","effective assiatant","pioneer","aggressive support","knight","mediocre","one tenth","footman","weeder","philanthropist"];
+	var level1 = ["onlooker","normal support","berserker","kind person","selfish"];
 
 
       $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
@@ -48,11 +63,17 @@
             flag_tag++
             tag_name = data.tags[i]
             var button_type
-            if (tag_name == "aaa") {
+            if (contains(level5, tag_name)) {
               button_type = "danger"
-            } else if (tag_name == "bbb") {
-              button_type = "primary"
-            }
+            } else if (contains(level4, tag_name)) {
+              button_type = "warning"
+            } else if (contains(level3, tag_name)) {
+              button_type = "Primary"
+            } else if (contains(level2, tag_name)) {
+              button_type = "success"
+            } else if (contains(level1, tag_name)) {
+              button_type = "secondary"
+	    }
 
 
             $("#tags").append("<button id = button" + i + " type=\"button\" class=\"btn btn-" + button_type+"\" style=\"margin-right:5px \"    >" + data.tags[i] + "</button>");
@@ -400,9 +421,9 @@ function update() {
       .attr("x", x_browser)
       .attr("y", y_browser +30)
       .attr("fill", "black")
-      .text(function(d) { return d.tags; })
-
-      ;
+      .text(function(d) {
+	return d.tags;
+	});
   /*
   nodeEnter.append("text")
       .attr("class", "nodetext")

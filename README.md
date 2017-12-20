@@ -2,18 +2,18 @@
 
 ## Directory structure
 1. root directory contains all the clustering and classification models
-  1. gen_dataset.ipynb contains all the functions that using Dota2 API to retrieve raw data, and build the clustering models
-  2. Dota2_classification.ipynb builds all the classification models
-  3. 1_xxx_yyy_zzz.csv - 10_xxx_yyy_zzz.csv is the output of clustring of a attribute sets, it is also the input of classification models
-  4. 1_players_model.csv - 10_players_model.csv is the raw data(filtered) we get from the Dota2 API
+  - gen_dataset.ipynb contains all the functions that using Dota2 API to retrieve raw data, and build the clustering models
+  - Dota2_classification.ipynb builds all the classification models
+  - 1_xxx_yyy_zzz.csv - 10_xxx_yyy_zzz.csv is the output of clustring of a attribute sets, it is also the input of classification models
+  - 1_players_model.csv - 10_players_model.csv is the raw data(filtered) we get from the Dota2 API
  
 2. Web directory contains the web application 
-  1. Server.py is the backend 
-    1. 10 models will be loaded during the initialization
-  2. models contains the 10 models
-  3. ojb contains the cached queries
-  4. templates/index is the frontend 
-    1. The Javascript function Update() is the enterance of the D3 code
+  - Server.py is the backend 
+    - 10 models will be loaded during the initialization
+  - models contains the 10 models
+  - ojb contains the cached queries
+  - templates/index is the frontend 
+    - The Javascript function Update() is the enterance of the D3 code
 
 ## How to run the demo
 

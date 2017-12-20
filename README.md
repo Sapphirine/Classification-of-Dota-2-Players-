@@ -31,6 +31,6 @@
   
 
 ## Dota2 API: 
-https://dota2api.readthedocs.io/en/latest/
-https://docs.opendota.com/
+- https://dota2api.readthedocs.io/en/latest/
+- https://docs.opendota.com/
 

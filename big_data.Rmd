@@ -1,0 +1,171 @@
+---
+title: "big data"
+author: "Chi Zhang"
+date: "2017Äê12ÔÂ13ÈÕ"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+library(prettydoc)
+library(data.table)
+library(Hmisc)
+library(DT)
+library(lubridate)
+library(ggplot2)
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+dat <- fread(input = "D:/Documents/GitDocument/Dota2_Player_Classification/players_info.csv")
+dat1 <- fread(input = "D:/Documents/GitDocument/Dota2_Player_Classification/1_players_info_kda.csv")
+dat2 <- fread(input = "D:/Documents/GitDocument/Dota2_Player_Classification/2_players_info_tower_a_last.csv")
+dat3 <- fread(input = "D:/Documents/GitDocument/Dota2_Player_Classification/3_players_info_a_stun_hh.csv")
+dat4 <- fread(input = "D:/Documents/GitDocument/Dota2_Player_Classification/4_players_info_k_ck_sk.csv")
+dat5 <- fread(input = "D:/Documents/GitDocument/Dota2_Player_Classification/5_players_info_stun_hh_camp.csv")
+dat6 <- fread(input = "D:/Documents/GitDocument/Dota2_Player_Classification/6_players_info_gpm_k_last.csv")
+dat7 <- fread(input = "D:/Documents/GitDocument/Dota2_Player_Classification/7_players_info_gpm_xpm.csv")
+dat8 <- fread(input = "D:/Documents/GitDocument/Dota2_Player_Classification/8_players_info_2damage.csv")
+dat9 <- fread(input = "D:/Documents/GitDocument/Dota2_Player_Classification/9_players_info_2sentry.csv")
+dat10 <- fread(input = "D:/Documents/GitDocument/Dota2_Player_Classification/10_players_info_last_deny.csv")
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r}
+#'account_id','hero_id','lose','isRadiant','duration'
+# farm:'gold_per_min','xp_per_min','hero_damage','tower_damage'
+# skill: 'kills','deaths','assists','last_hits','denies','rune_pickups','courier_kills'
+# support: 'stuns','sentry_uses','sentry_kills', 'hero_healing','camps_stacked'
+dat <- dat[, ':='(hero_damage_pm, hero_damage/duration)]
+dat <- dat[, ':='(tower_damage_pm, tower_damage/duration)]
+dat <- dat[, ':='(kills_pm, kills/duration)]
+dat <- dat[, ':='(deaths_pm, deaths/duration)]
+dat <- dat[, ':='(assists_pm, assists/duration)]
+dat <- dat[, ':='(last_hits_pm, last_hits/duration)]
+dat <- dat[, ':='(denies_pm, denies/duration)]
+dat <- dat[, ':='(rune_pickup_pm, rune_pickup/duration)]
+dat <- dat[, ':='(courier_kills_pm, courier_kills/duration)]
+dat <- dat[, ':='(stuns_pm, stuns/duration)]
+dat <- dat[, ':='(sentry_uses_pm, sentry_uses/duration)]
+dat <- dat[, ':='(sentry_kills_pm, sentry_kills/duration)]
+dat <- dat[, ':='(hero_healing_pm, hero_healing/duration)]
+dat <- dat[, ':='(camp_stacked_pm, camp_stacked/duration)]
+
+```
+
+```{r}
+camp_stack_dat <- dat[camp_stacked_pm > 0]
+write.csv(camp_stack_dat, file = "D:/Documents/GitDocument/Dota2_Player_Classification/no_zero_camp_stacked.csv", row.names = FALSE)
+```
+
+
+```{r}
+# write.csv(dat, file = "D:/Documents/GitDocument/Dota2_Player_Classification/players_info_pm.csv", row.names = FALSE)
+dat1 <- dat1[V4 %in% c(1,4,8) ,':='(V5, 0)]
+dat1 <- dat1[V4 %in% c(2,5,7) ,':='(V5, 1)]
+dat1 <- dat1[V4 %in% c(0,6) ,':='(V5, 2)]
+dat1 <- dat1[V4 %in% c(3) ,':='(V5, 3)]
+dat1 <- dat1[, -4]
+# write.csv(dat1, file = "D:/Documents/GitDocument/Dota2_Player_Classification/1_players_model.csv", row.names = FALSE)
+```
+
+```{r}
+dat2 <- dat2[V4 %in% c(5) ,':='(V5, 0)]
+dat2 <- dat2[V4 %in% c(0) ,':='(V5, 1)]
+dat2 <- dat2[V4 %in% c(1,2,4,6) ,':='(V5, 2)]
+dat2 <- dat2[V4 %in% c(3,8) ,':='(V5, 3)]
+dat2 <- dat2[V4 %in% c(7) ,':='(V5, 4)]
+dat2 <- dat2[, -4]
+write.csv(dat2, file = "D:/Documents/GitDocument/Dota2_Player_Classification/2_players_model.csv", row.names = FALSE)
+```
+
+```{r}
+dat3 <- dat3[V4 %in% c(0) ,':='(V5, 0)]
+dat3 <- dat3[V4 %in% c(4,6,7) ,':='(V5, 1)]
+dat3 <- dat3[V4 %in% c(1,5,8) ,':='(V5, 2)]
+dat3 <- dat3[V4 %in% c(2,3) ,':='(V5, 3)]
+dat3 <- dat3[, -4]
+write.csv(dat3, file = "D:/Documents/GitDocument/Dota2_Player_Classification/3_players_model.csv", row.names = FALSE)
+```
+
+```{r}
+dat4 <- dat4[V4 %in% c(2,8) ,':='(V5, 0)]
+dat4 <- dat4[V4 %in% c(1,6) ,':='(V5, 1)]
+dat4 <- dat4[V4 %in% c(3,5) ,':='(V5, 2)]
+dat4 <- dat4[V4 %in% c(0,7) ,':='(V5, 3)]
+dat4 <- dat4[V4 %in% c(4) ,':='(V5, 4)]
+dat4 <- dat4[, -4]
+write.csv(dat4, file = "D:/Documents/GitDocument/Dota2_Player_Classification/4_players_model.csv", row.names = FALSE)
+```
+
+```{r}
+dat5 <- dat5[V4 %in% c(0) ,':='(V5, 0)]
+dat5 <- dat5[V4 %in% c(4) ,':='(V5, 1)]
+dat5 <- dat5[V4 %in% c(3,6,8) ,':='(V5, 2)]
+dat5 <- dat5[V4 %in% c(1,5) ,':='(V5, 3)]
+dat5 <- dat5[V4 %in% c(2,7) ,':='(V5, 4)]
+dat5 <- dat5[, -4]
+write.csv(dat5, file = "D:/Documents/GitDocument/Dota2_Player_Classification/5_players_model.csv", row.names = FALSE)
+```
+
+```{r}
+dat6 <- dat6[V4 %in% c(2,3) ,':='(V5, 0)]
+dat6 <- dat6[V4 %in% c(0,6,8) ,':='(V5, 1)]
+dat6 <- dat6[V4 %in% c(1,4,5) ,':='(V5, 2)]
+dat6 <- dat6[V4 %in% c(7) ,':='(V5, 3)]
+dat6 <- dat6[, -4]
+write.csv(dat6, file = "D:/Documents/GitDocument/Dota2_Player_Classification/6_players_model.csv", row.names = FALSE)
+```
+
+```{r}
+dat7 <- dat7[V3 %in% c(0,7) ,':='(V4, 0)]
+dat7 <- dat7[V3 %in% c(3,4,6) ,':='(V4, 1)]
+dat7 <- dat7[V3 %in% c(1,5) ,':='(V4, 2)]
+dat7 <- dat7[V3 %in% c(2,8) ,':='(V4, 3)]
+dat7 <- dat7[, -3]
+write.csv(dat7, file = "D:/Documents/GitDocument/Dota2_Player_Classification/7_players_model.csv", row.names = FALSE)
+```
+
+```{r}
+dat8 <- dat8[V3 %in% c(2) ,':='(V4, 0)]
+dat8 <- dat8[V3 %in% c(1,6) ,':='(V4, 1)]
+dat8 <- dat8[V3 %in% c(3,4) ,':='(V4, 2)]
+dat8 <- dat8[V3 %in% c(0,7) ,':='(V4, 3)]
+dat8 <- dat8[V3 %in% c(5,8) ,':='(V4, 4)]
+dat8 <- dat8[, -3]
+write.csv(dat8, file = "D:/Documents/GitDocument/Dota2_Player_Classification/8_players_model.csv", row.names = FALSE)
+```
+
+```{r}
+dat9 <- dat9[V3 %in% c(0,1,7) ,':='(V4, 0)]
+dat9 <- dat9[V3 %in% c(6) ,':='(V4, 1)]
+dat9 <- dat9[V3 %in% c(4,8) ,':='(V4, 2)]
+dat9 <- dat9[V3 %in% c(2,5) ,':='(V4, 3)]
+dat9 <- dat9[V3 %in% c(3) ,':='(V4, 4)]
+dat9 <- dat9[, -3]
+write.csv(dat9, file = "D:/Documents/GitDocument/Dota2_Player_Classification/9_players_model.csv", row.names = FALSE)
+```
+
+```{r}
+dat10 <- dat10[V3 %in% c(1,8) ,':='(V4, 0)]
+dat10 <- dat10[V3 %in% c(0,5) ,':='(V4, 1)]
+dat10 <- dat10[V3 %in% c(2,3,7) ,':='(V4, 2)]
+dat10 <- dat10[V3 %in% c(4,6) ,':='(V4, 3)]
+dat10 <- dat10[, -3]
+write.csv(dat10, file = "D:/Documents/GitDocument/Dota2_Player_Classification/10_players_model.csv", row.names = FALSE)
+```
+

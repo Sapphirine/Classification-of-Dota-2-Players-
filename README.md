@@ -34,3 +34,5 @@
 - https://dota2api.readthedocs.io/en/latest/
 - https://docs.opendota.com/
 
+## Sample of Raw Data
+- https://drive.google.com/open?id=1lRklOaJie2CHzoK6cePBYIb8wC8sXYSt
